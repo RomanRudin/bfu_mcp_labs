@@ -1,3 +1,5 @@
+Labs on the subject of microcontrollers programming, 3rd course
+
 # Template for starting development for stm32f1x.
 
 Based on CMSIS, uses cmake+make bulding system.
