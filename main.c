@@ -1,25 +1,33 @@
 #include <stdint.h>
-#include <stm32f10x.h>
 
 void delay(uint32_t ticks) {
-	for (int i=0; i<ticks; i++) {
-		__NOP();
-	}
+    for (volatile uint32_t i = 0; i < ticks; i++);
 }
 
-int __attribute((noreturn)) main(void) {
-	// Enable clock for AFIO
-	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
-	// Enable clock for GPIOC
-	RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;
-	// Enable PC13 push-pull mode
-	GPIOC->CRH &= ~GPIO_CRH_CNF13; //clear cnf bits
-	GPIOC->CRH |= GPIO_CRH_MODE13_0; //Max speed = 10Mhz
+void SPI1_Init(void);
+void SPI1_Write(uint8_t data);
+uint8_t SPI1_Read(void);
+void SSD1306_Init(void);
+void SSD1306_DrawChessBoard(void);
+void SSD1306_Update(void);
 
-    while (1) {
-	    GPIOC->ODR |= (1U<<13U); //U -- unsigned suffix (to avoid syntax warnings in IDE)
-		delay(1000000);
-	    GPIOC->ODR &= ~(1U<<13U);
-	    delay(1000000);
+int main(void) {
+    *(volatile uint32_t*)(0x40021000 + 0x18) |= (1 << 4);
+    *(volatile uint32_t*)(0x40011000 + 0x04) |= (1 << 20);
+    for(int i = 0; i < 3; i++) {
+        *(volatile uint32_t*)(0x40011000 + 0x0C) |= (1 << 13);
+        delay(100000);
+        *(volatile uint32_t*)(0x40011000 + 0x0C) &= ~(1 << 13);
+        delay(100000);
+    }
+    
+    SPI1_Init();
+    SSD1306_Init();
+    SSD1306_DrawChessBoard();
+    SSD1306_Update();
+    
+    while(1) {
+        *(volatile uint32_t*)(0x40011000 + 0x0C) ^= (1 << 13);
+        delay(500000);
     }
 }
