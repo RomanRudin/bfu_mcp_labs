@@ -94,8 +94,6 @@ void handle_buttons(void)
         return;
     }
 }
-<<<<<<< HEAD
-=======
 
 void delay(uint32_t ticks) 
 {
@@ -129,4 +127,3 @@ int main(void)
         }
     }
 }
->>>>>>> d0b839d483bbcba5ccc672f5d28bfcc139982cb8
